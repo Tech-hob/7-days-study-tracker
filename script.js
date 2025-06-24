@@ -1,490 +1,237 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Data Definition ---
+    const daysContainer = document.getElementById('days-container');
+    const resetProgressBtn = document.getElementById('resetProgressBtn');
+
+    // Your study plan data (unchanged, but crucial for rendering)
     const studyPlan = [
         {
-            day: 1,
-            title: "Day 1",
-            subTitle: "(आज का Target 💥)",
-            sections: [
-                {
-                    time: "Morning (10–11:30 AM)",
-                    tasks: [
-                        "Quadratic Equation – Video Part 1",
-                        "Notes bana, key formulae likh"
-                    ]
-                },
-                {
-                    time: "Evening (5–7 PM)",
-                    tasks: [
-                        "Quadratic Equation – Video Part 2",
-                        "Quick 30 min recap",
-                        "3 Questions practice"
-                    ]
-                }
+            day: "Day 1",
+            emoji: "🧠",
+            morning: [
+                "Pair of Linear Equations – Part 1 video (1.5 hr)",
+                "Note graph methods + substitution"
+            ],
+            evening: [
+                "Pair of Linear Equations – Part 2 video (2 hr)",
+                "Practice 2 word problems"
             ]
         },
         {
-            day: 2,
-            title: "Day 2",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Pair of Linear Equations – Video Part 1",
-                        "Graph method note karna mat bhoolna"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Pair of Linear Equations – Video Part 2",
-                        "3 word problems try kar"
-                    ]
-                }
+            day: "Day 2",
+            emoji: "🧠",
+            morning: [
+                "Pair of Linear Equations – Quick Recap (1 hr)",
+                "Practice set 1 (30 mins)"
+            ],
+            evening: [
+                "Quadratic Equation – Part 1 video (1.25 hr)",
+                "Note: factorization, formula method"
             ]
         },
         {
-            day: 3,
-            title: "Day 3",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Pair of Linear Equations – Revision",
-                        "Formulas flashcards banale"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Arithmetic Progression – Video Part 1",
-                        "Focus: nth term, sum formula"
-                    ]
-                }
+            day: "Day 3",
+            emoji: "🧠",
+            morning: [
+                "Quadratic Equation – Part 2 video (1.25 hr)",
+                "Practice 4 sums"
+            ],
+            evening: [
+                "Quadratic Equation – Revise + Apply (2 hr)",
+                "Solve 5 MCQs + 2 word problems"
             ]
         },
         {
-            day: 4,
-            title: "Day 4",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Arithmetic Progression – Part 2",
-                        "Doubts clear + 3 sums practice"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Control & Coordination – Full video",
-                        "Mind map bana le: hormones, reflex, neurons"
-                    ]
-                }
+            day: "Day 4",
+            emoji: "🧠",
+            morning: [
+                "Arithmetic Progression – Part 1 (1.5 hr)",
+                "nth term + sum concepts"
+            ],
+            evening: [
+                "Arithmetic Progression – Part 2 (1.5 hr)",
+                "Practice 4 questions + doubt list"
             ]
         },
         {
-            day: 5,
-            title: "Day 5",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Acid, Base and Salts – Full",
-                        "Indicators table yaad rakh!"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Sci Chapter 1 & 2 – Quick Recap",
-                        "5 PYQs solve kar lena"
-                    ]
-                }
+            day: "Day 5",
+            emoji: "🧠",
+            morning: [
+                "Arithmetic Progression – Recap + Test (1.5 hr)",
+                "Self-check quiz (5 Qs)"
+            ],
+            evening: [
+                "Acid, Base and Salts – Full video (1.25 hr)",
+                "Table of indicators + daily life examples"
             ]
         },
         {
-            day: 6,
-            title: "Day 6",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Math Chapter 1 & 2 Revision",
-                        "Key concepts & mistakes jot down"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Mix Practice Sheet: 5 questions each",
-                        "Weak areas ko highlight karna"
-                    ]
-                }
+            day: "Day 6",
+            emoji: "🧠",
+            morning: [
+                "Control & Coordination – Full video (1.5 hr)",
+                "Mind map of reflex arc, hormones"
+            ],
+            evening: [
+                "Revise: All Science chapters (2 hr)",
+                "Flashcards + past paper Qs"
             ]
         },
         {
-            day: 7,
-            title: "Day 7",
-            subTitle: "(Victory Day 🏆)",
-            sections: [
-                {
-                    time: "Morning",
-                    tasks: [
-                        "Mega Recap – Flashcards + Mind Maps",
-                        "20 min chill test (MCQs only)"
-                    ]
-                },
-                {
-                    time: "Evening",
-                    tasks: [
-                        "Solve doubts",
-                        "Chill + Motivation session (your fav YouTuber)"
-                    ]
-                }
+            day: "Day 7 (Fatte Chak Day 💥)",
+            emoji: "💥",
+            morning: [
+                "Revise: All Math chapters (1.5 hr)",
+                "5 sums mixed type"
+            ],
+            evening: [
+                "Doubt Solving + Mega Recap",
+                "Chill with confidence 😎"
             ]
         }
     ];
 
-    let taskStates = {}; // Stores the completion state for all tasks
+    // --- Local Storage Functions ---
 
-    // --- DOM Elements ---
-    const daysContainer = document.querySelector('.days-container');
-    const overallProgressBar = document.getElementById('overall-progress-bar');
-    const overallProgressText = document.getElementById('overall-progress-text');
-    const resetAllBtn = document.getElementById('reset-all-btn');
-    const toastContainer = document.getElementById('toast-container');
-
-    // --- Utility Functions ---
-
-    /**
-     * Displays a toast notification.
-     * @param {string} message - The message to display.
-     * @param {number} duration - How long the toast should be visible in milliseconds.
-     */
-    const showToast = (message, duration = 3000) => {
-        const toast = document.createElement('div');
-        toast.classList.add('toast');
-        toast.textContent = message;
-        toastContainer.appendChild(toast);
-
-        // Animate in
-        setTimeout(() => toast.style.opacity = '1', 10);
-        toast.style.transform = 'translateX(0)';
-
-        // Animate out and remove
-        setTimeout(() => {
-            toast.style.opacity = '0';
-            toast.style.transform = 'translateX(100%)';
-            toast.addEventListener('transitionend', () => toast.remove());
-        }, duration);
-    };
-
-    /**
-     * Triggers a confetti animation.
-     */
-    const triggerConfetti = () => {
-        const confettiSettings = { target: 'confetti-canvas', max: 100, size: 1.2, clock: 25, props: ['circle', 'square', 'triangle', 'line'], colors: [[165,104,246],[230,61,135],[0,199,228],[253,214,126]], width: window.innerWidth, height: window.innerHeight };
-        const confetti = new ConfettiGenerator(confettiSettings);
-        confetti.render();
-        setTimeout(() => confetti.clear(), 3000); // Clear confetti after 3 seconds
-    };
-
-    /**
-     * Saves the current task states to Local Storage.
-     */
-    const saveTaskStates = () => {
-        localStorage.setItem('studyTrackerTaskStates', JSON.stringify(taskStates));
-        // showToast('Progress saved!'); // Optional: Too many toasts if saving on every click
-    };
-
-    /**
-     * Loads task states from Local Storage.
-     */
-    const loadTaskStates = () => {
-        const savedStates = localStorage.getItem('studyTrackerTaskStates');
-        if (savedStates) {
-            taskStates = JSON.parse(savedStates);
-        } else {
-            // Initialize taskStates if nothing is saved yet
-            studyPlan.forEach(dayData => {
-                taskStates[dayData.day] = {};
-                dayData.sections.forEach(section => {
-                    section.tasks.forEach((task, taskIdx) => {
-                        if (!taskStates[dayData.day][section.time]) {
-                            taskStates[dayData.day][section.time] = {};
-                        }
-                        taskStates[dayData.day][section.time][taskIdx] = false; // Default to not completed
-                    });
-                });
-            });
-            saveTaskStates(); // Save the initial empty state
+    // Function to load saved state from Local Storage
+    const loadState = () => {
+        const savedState = localStorage.getItem('studyPlanState');
+        try {
+            return savedState ? JSON.parse(savedState) : {};
+        } catch (e) {
+            console.error("Error parsing saved state from Local Storage:", e);
+            return {}; // Return empty state on error
         }
     };
 
-    /**
-     * Updates the progress bar for a specific day.
-     * @param {number} dayNum - The day number.
-     */
-    const updateDayProgress = (dayNum) => {
-        const dayCard = document.getElementById(`day-${dayNum}`);
-        if (!dayCard) return;
-
-        const dayProgressBar = dayCard.querySelector('.day-progress-bar');
-        const dayStatusEmoji = dayCard.querySelector('.status-emoji');
-
-        let completedTasks = 0;
-        let totalTasks = 0;
-
-        const dayState = taskStates[dayNum];
-        if (dayState) {
-            for (const time in dayState) {
-                for (const taskIdx in dayState[time]) {
-                    totalTasks++;
-                    if (dayState[time][taskIdx]) {
-                        completedTasks++;
-                    }
-                }
-            }
-        }
-
-        const percentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
-        dayProgressBar.style.width = `${percentage}%`;
-
-        if (percentage === 100 && totalTasks > 0) {
-            dayCard.classList.add('day-completed');
-            dayStatusEmoji.textContent = '🎉';
-            dayStatusEmoji.style.opacity = '1';
-            // Only trigger confetti if it just became 100%
-            if (!dayCard.dataset.confettiTriggered || dayCard.dataset.confettiTriggered === 'false') {
-                 triggerConfetti();
-                 dayCard.dataset.confettiTriggered = 'true';
-            }
-        } else {
-            dayCard.classList.remove('day-completed');
-            dayStatusEmoji.textContent = '';
-            dayStatusEmoji.style.opacity = '0';
-            dayCard.dataset.confettiTriggered = 'false';
-        }
-
-        // Update the "Mark Day as Complete" button state
-        const markDayCompleteBtn = dayCard.querySelector('.mark-day-complete-btn');
-        if (markDayCompleteBtn) {
-            markDayCompleteBtn.disabled = (percentage === 100 && totalTasks > 0);
+    // Function to save state to Local Storage
+    const saveState = (state) => {
+        try {
+            localStorage.setItem('studyPlanState', JSON.stringify(state));
+        } catch (e) {
+            console.error("Error saving state to Local Storage:", e);
         }
     };
 
-    /**
-     * Updates the overall progress bar.
-     */
-    const updateOverallProgress = () => {
-        let overallCompletedTasks = 0;
-        let overallTotalTasks = 0;
+    // Get initial state or empty object
+    let currentPlanState = loadState();
 
-        studyPlan.forEach(dayData => {
-            const dayState = taskStates[dayData.day];
-            if (dayState) {
-                for (const time in dayState) {
-                    for (const taskIdx in dayState[time]) {
-                        overallTotalTasks++;
-                        if (dayState[time][taskIdx]) {
-                            overallCompletedTasks++;
-                        }
-                    }
-                }
-            }
-        });
+    // --- Rendering and Event Handling ---
 
-        const overallPercentage = overallTotalTasks === 0 ? 0 : Math.round((overallCompletedTasks / overallTotalTasks) * 100);
-        overallProgressBar.style.width = `${overallPercentage}%`;
-        overallProgressText.textContent = `${overallPercentage}% Complete`;
-    };
-
-    /**
-     * Renders all day cards and their tasks based on studyPlan data.
-     */
-    const renderStudyPlan = () => {
+    // Function to render the study plan
+    const renderPlan = () => {
         daysContainer.innerHTML = ''; // Clear existing content
 
         studyPlan.forEach((dayData, dayIndex) => {
             const dayCard = document.createElement('div');
             dayCard.classList.add('day-card');
-            dayCard.id = `day-${dayData.day}`;
-            dayCard.style.animationDelay = `${dayIndex * 0.1}s`; // Stagger animation
+            dayCard.dataset.dayIndex = dayIndex; // Store day index for easy lookup
 
-            let subTitleHtml = '';
-            if (dayData.subTitle) {
-                const subClass = dayData.subTitle.includes('Target') ? 'target-text' : 'victory-text';
-                subTitleHtml = `<span class="${subClass}">${dayData.subTitle}</span>`;
+            const dayTitle = document.createElement('h2');
+            dayTitle.innerHTML = `${dayData.emoji} ${dayData.day}`;
+            dayCard.appendChild(dayTitle);
+
+            // Render Morning Slot
+            if (dayData.morning && dayData.morning.length > 0) {
+                const morningSlot = document.createElement('div');
+                morningSlot.classList.add('time-slot');
+                morningSlot.innerHTML = '<h3>Morning</h3>';
+                const morningList = document.createElement('ul');
+                morningList.classList.add('task-list');
+
+                dayData.morning.forEach(task => {
+                    const taskItem = createTaskElement(dayIndex, task);
+                    morningList.appendChild(taskItem);
+                });
+                morningSlot.appendChild(morningList);
+                dayCard.appendChild(morningSlot);
             }
 
-            dayCard.innerHTML = `
-                <h2 class="day-title">
-                    ${dayData.title} ${subTitleHtml}
-                    <span class="status-emoji"></span>
-                </h2>
-                <div class="day-progress">
-                    <div class="progress-bar-container day-progress-bar-container">
-                        <div class="progress-bar day-progress-bar"></div>
-                    </div>
-                </div>
-            `;
+            // Render Evening Slot
+            if (dayData.evening && dayData.evening.length > 0) {
+                const eveningSlot = document.createElement('div');
+                eveningSlot.classList.add('time-slot');
+                eveningSlot.innerHTML = '<h3>Evening</h3>';
+                const eveningList = document.createElement('ul');
+                eveningList.classList.add('task-list');
 
-            dayData.sections.forEach(section => {
-                const taskSectionDiv = document.createElement('div');
-                taskSectionDiv.classList.add('task-section');
-                taskSectionDiv.innerHTML = `<h3>${section.time}</h3><ul></ul>`;
-                const ul = taskSectionDiv.querySelector('ul');
-
-                section.tasks.forEach((taskText, taskIdx) => {
-                    const li = document.createElement('li');
-                    li.dataset.day = dayData.day;
-                    li.dataset.time = section.time;
-                    li.dataset.task = taskIdx;
-
-                    // Check if task is completed from loaded states
-                    const isCompleted = taskStates[dayData.day]?.[section.time]?.[taskIdx] || false;
-                    if (isCompleted) {
-                        li.classList.add('completed');
-                    }
-
-                    li.innerHTML = `
-                        <input type="checkbox" id="day${dayData.day}-task${taskIdx}-${section.time.replace(/\W/g, '')}" ${isCompleted ? 'checked' : ''}>
-                        <label for="day${dayData.day}-task${taskIdx}-${section.time.replace(/\W/g, '')}">${taskText}</label>
-                    `;
-                    ul.appendChild(li);
+                dayData.evening.forEach(task => {
+                    const taskItem = createTaskElement(dayIndex, task);
+                    eveningList.appendChild(taskItem);
                 });
-                dayCard.appendChild(taskSectionDiv);
-            });
-
-            // Add "Mark Day as Complete" button
-            const markDayCompleteBtn = document.createElement('button');
-            markDayCompleteBtn.classList.add('mark-day-complete-btn');
-            markDayCompleteBtn.innerHTML = '<i class="fas fa-check-double"></i> Mark Day Complete';
-            markDayCompleteBtn.addEventListener('click', () => {
-                markAllTasksForDay(dayData.day);
-                showToast(`Day ${dayData.day} marked as complete!`);
-            });
-            dayCard.appendChild(markDayCompleteBtn);
-
+                eveningSlot.appendChild(eveningList);
+                dayCard.appendChild(eveningSlot);
+            }
 
             daysContainer.appendChild(dayCard);
-        });
-
-        // Attach event listeners after all elements are rendered
-        attachEventListeners();
-        updateAllProgress(); // Update progress bars after rendering
-    };
-
-    /**
-     * Attaches event listeners to all dynamically created elements.
-     */
-    const attachEventListeners = () => {
-        // Event listener for individual task checkboxes/list items
-        document.querySelectorAll('li').forEach(listItem => {
-            listItem.addEventListener('click', (event) => {
-                // Ensure click is not on the label or input directly if that's preferred
-                // If you want clicking anywhere on LI to toggle:
-                if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL') {
-                    const checkbox = listItem.querySelector('input[type="checkbox"]');
-                    checkbox.checked = !checkbox.checked;
-                    // Manually dispatch change event to trigger checkbox's own listener
-                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-                }
-            });
-        });
-
-        // Event listener for actual checkbox changes
-        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', (event) => {
-                const li = event.target.closest('li');
-                const day = li.dataset.day;
-                const time = li.dataset.time;
-                const taskIndex = li.dataset.task;
-
-                taskStates[day][time][taskIndex] = event.target.checked;
-
-                if (event.target.checked) {
-                    li.classList.add('completed');
-                    li.style.backgroundColor = 'var(--completed-bg)';
-                    showToast('Task completed! ✅');
-                } else {
-                    li.classList.remove('completed');
-                    li.style.backgroundColor = 'var(--uncompleted-bg)';
-                    showToast('Task unchecked! 🔄');
-                }
-
-                // Reset background after a short delay for animation effect
-                setTimeout(() => {
-                    li.style.backgroundColor = '';
-                }, 300);
-
-                saveTaskStates();
-                updateDayProgress(day);
-                updateOverallProgress();
-            });
+            checkDayCompletion(dayCard, dayIndex); // Check completion status initially for each day
         });
     };
 
-    /**
-     * Marks all tasks for a given day as complete.
-     * @param {number} dayNum - The day number to mark complete.
-     */
-    const markAllTasksForDay = (dayNum) => {
-        const dayCard = document.getElementById(`day-${dayNum}`);
-        if (!dayCard) return;
+    // Helper function to create a task list item
+    const createTaskElement = (dayIndex, taskText) => {
+        const taskItem = document.createElement('li');
+        taskItem.classList.add('task-item');
 
-        const dayState = taskStates[dayNum];
-        if (dayState) {
-            for (const time in dayState) {
-                for (const taskIdx in dayState[time]) {
-                    taskStates[dayNum][time][taskIdx] = true; // Mark as complete in state
-                }
+        // Create a unique ID for each task using dayIndex and base64 encoding of taskText
+        // This ensures unique IDs even if task text repeats across days
+        const taskId = `day-${dayIndex}-task-${btoa(taskText).replace(/=/g, '')}`; // Remove padding for cleaner ID
+
+        const isChecked = currentPlanState[taskId] === true;
+
+        taskItem.innerHTML = `
+            <input type="checkbox" id="${taskId}" ${isChecked ? 'checked' : ''}>
+            <span class="custom-checkbox"></span>
+            <span class="task-text">${taskText}</span>
+        `;
+
+        const checkbox = taskItem.querySelector(`#${taskId}`);
+        checkbox.addEventListener('change', (event) => {
+            currentPlanState[taskId] = event.target.checked;
+            saveState(currentPlanState); // Save state immediately on change
+
+            // Find the parent day card and update its completion status
+            const dayCard = event.target.closest('.day-card');
+            if (dayCard) {
+                const currentDayIndex = parseInt(dayCard.dataset.dayIndex);
+                checkDayCompletion(dayCard, currentDayIndex);
             }
-        }
-
-        // Visually update checkboxes and LIs
-        dayCard.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = true;
-            checkbox.closest('li').classList.add('completed');
         });
 
-        saveTaskStates();
-        updateDayProgress(dayNum);
-        updateOverallProgress();
+        return taskItem;
     };
 
-    /**
-     * Updates all day progress bars and the overall progress bar.
-     */
-    const updateAllProgress = () => {
-        studyPlan.forEach(dayData => updateDayProgress(dayData.day));
-        updateOverallProgress();
-    };
+    // Function to check and update a day card's completion status
+    const checkDayCompletion = (dayCardElement, dayIndex) => {
+        // Get all checkbox elements within this specific dayCardElement
+        const checkboxes = Array.from(dayCardElement.querySelectorAll('.task-item input[type="checkbox"]'));
 
-    /**
-     * Resets all progress data.
-     */
-    const resetAllProgress = () => {
-        if (confirm('Are you sure you want to reset all your study progress? This action cannot be undone.')) {
-            localStorage.removeItem('studyTrackerTaskStates');
-            taskStates = {}; // Clear current state
-            loadTaskStates(); // Re-initialize with empty state
-            renderStudyPlan(); // Re-render everything
-            showToast('All progress has been reset!', 4000);
+        if (checkboxes.length === 0) {
+            dayCardElement.classList.remove('completed'); // If no tasks, it's not completed
+            return;
+        }
+
+        const allTasksCompleted = checkboxes.every(cb => cb.checked);
+
+        if (allTasksCompleted) {
+            dayCardElement.classList.add('completed');
+        } else {
+            dayCardElement.classList.remove('completed');
         }
     };
 
-    // --- Initializations ---
-    loadTaskStates(); // Load state first
-    renderStudyPlan(); // Then render the UI
-    updateAllProgress(); // Ensure all progress bars are updated correctly
+    // --- Event Listeners ---
 
-    // Create a canvas for confetti
-    const confettiCanvas = document.createElement('canvas');
-    confettiCanvas.id = 'confetti-canvas';
-    document.body.appendChild(confettiCanvas);
+    // Reset Progress Button
+    resetProgressBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to reset all your progress? This cannot be undone.")) {
+            localStorage.removeItem('studyPlanState'); // Clear all saved data
+            currentPlanState = {}; // Reset current state in memory
+            renderPlan(); // Re-render the plan from scratch
+            alert("All progress has been reset!");
+        }
+    });
 
-    // Event listener for the "Reset All" button
-    resetAllBtn.addEventListener('click', resetAllProgress);
+
+    // Initial render when the page loads
+    renderPlan();
 });
