@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const daysContainer = document.getElementById('days-container');
     const resetProgressBtn = document.getElementById('resetProgressBtn');
 
-    // Your study plan data (unchanged, but crucial for rendering)
+    // Your study plan data, converted into a JavaScript array of objects
     const studyPlan = [
         {
             day: "Day 1",
@@ -230,7 +230,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert("All progress has been reset!");
         }
     });
-
 
     // Initial render when the page loads
     renderPlan();
